@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>塔羅解牌台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 版面：單欄，頂部分頁（速查／牌陣／解牌），夜色為主、羊皮紙為淺色主題 */
+:root{
+  --bg:#f3ead9; --surface:#fbf6ec; --surface2:#f0e5d0; --ink:#3b3028; --muted:#8c7a60;
+  --line:#e2d4b9; --gold:#a9741f; --gold-soft:#e9d7a8; --plum:#6e4b7c; --up:#2f7d57; --rev:#b06a2c;
+  --shadow:0 8px 28px rgba(80,55,20,.12);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17131f; --surface:#221b2e; --surface2:#2b2238; --ink:#efe6d4; --muted:#a799bd;
+  --line:#372f49; --gold:#e3b559; --gold-soft:#5a4a2a; --plum:#bd98d8; --up:#5fc08a; --rev:#e0975a;
+  --shadow:0 10px 32px rgba(0,0,0,.4); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#17131f; --surface:#221b2e; --surface2:#2b2238; --ink:#efe6d4; --muted:#a799bd;
+  --line:#372f49; --gold:#e3b559; --gold-soft:#5a4a2a; --plum:#bd98d8; --up:#5fc08a; --rev:#e0975a;
+  --shadow:0 10px 32px rgba(0,0,0,.4); color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Serif TC',"Songti TC",serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.latin{font-family:'Cinzel',serif;letter-spacing:.14em}
+.hero{text-align:center;padding-block:22px 10px}
+.hero .star{color:var(--gold);font-size:13px;letter-spacing:.5em}
+.hero h1{margin:.1em 0 .05em;font-size:27px;font-weight:700;letter-spacing:.12em}
+.hero .sub{font-size:11px;color:var(--muted);text-transform:uppercase}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;display:flex;gap:4px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);padding:8px 0;border-bottom:1px solid var(--line);margin-bottom:14px}
+.tabs button{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-family:inherit;font-size:14px;font-weight:600;padding:9px 6px;border-radius:10px;cursor:pointer}
+.tabs button.on{background:var(--plum);color:#fff;border-color:var(--plum)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-bottom:12px;box-shadow:var(--shadow)}
+label.fld{display:block;font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.04em;margin:0 0 5px}
+input,select,textarea,button{font-family:inherit}
+input[type=text],textarea,select{width:100%;border:1.5px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--ink);font-size:15px;padding:10px 12px}
+textarea{min-height:64px;resize:vertical;line-height:1.5}
+.search{position:relative;margin-bottom:12px}
+.ref-group{margin:18px 0 6px;font-size:12px;font-weight:600;color:var(--gold);letter-spacing:.18em}
+.ref-group .latin{color:var(--muted);font-size:10px;margin-left:8px}
+.crow{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:8px;overflow:hidden}
+.crow>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:11px 13px;font-weight:600}
+.crow>summary::-webkit-details-marker{display:none}
+.crow>summary .chev{margin-left:auto;color:var(--gold);transition:transform .2s}
+.crow[open]>summary .chev{transform:rotate(90deg)}
+.crow .meaning{padding:0 13px 13px;border-top:1px dashed var(--line);margin-top:2px}
+.crow .mline{display:flex;gap:9px;padding-top:10px;font-size:14px}
+.ori{flex:0 0 auto;font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;height:fit-content;margin-top:2px}
+.ori.u{color:#fff;background:var(--up)} .ori.r{color:#fff;background:var(--rev)}
+.kw{color:var(--muted);font-size:12.5px}
+.spread{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:var(--surface)}
+.spread h3{margin:0 0 2px;font-size:16px;font-weight:700}
+.spread .cnt{font-size:11px;color:var(--gold);font-weight:600;letter-spacing:.1em}
+.spread ol{margin:8px 0 0;padding-left:20px;font-size:13.5px;color:var(--ink)}
+.spread ol li{margin-bottom:3px}
+.spread ol li b{color:var(--plum)}
+.posrow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:9px}
+.posrow .plabel{grid-column:1/-1;font-size:12.5px;font-weight:700;color:var(--plum)}
+.oribtn{border:1.5px solid var(--line);background:var(--surface2);color:var(--ink);font-size:13px;font-weight:700;padding:10px 12px;border-radius:10px;cursor:pointer;white-space:nowrap;min-width:60px}
+.oribtn[data-o="rev"]{color:#fff;background:var(--rev);border-color:var(--rev)}
+.oribtn[data-o="up"]{color:#fff;background:var(--up);border-color:var(--up)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:11px;font-size:15px;font-weight:700;padding:13px 18px;cursor:pointer}
+.btn-go{background:var(--gold);color:#271c08;width:100%;box-shadow:var(--shadow)}
+.btn-go:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{background:var(--surface2);color:var(--ink);border:1.5px solid var(--line)}
+.row-btns{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
+.assembled{white-space:pre-wrap;font-size:13.5px;background:var(--surface2);border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:4px;color:var(--ink)}
+.reading{white-space:pre-wrap;font-size:14.5px;line-height:1.72;margin-top:4px}
+.reading:empty{display:none}
+.hint{font-size:12px;color:var(--muted);margin:6px 0 0}
+.divider{height:1px;background:var(--line);margin:16px 0}
+.addmore{display:flex;align-items:center;gap:8px;margin:4px 0 2px}
+.addmore button{border:1.5px dashed var(--gold);background:transparent;color:var(--gold);font-weight:700;font-size:13px;padding:7px 12px;border-radius:9px;cursor:pointer}
+.themebtn{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 14px);border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;font-size:12px;padding:5px 11px;cursor:pointer;z-index:12}
+.small{font-size:12px;color:var(--muted)}
+@media (max-width:420px){.posrow{grid-template-columns:1fr}.oribtn{width:100%}}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.mchip{border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:8px 9px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.mchip.today{border-color:var(--gold);box-shadow:0 0 0 1.5px var(--gold)}
+.mchip.sel{background:var(--surface2);border-color:var(--plum)}
+.mchip .md{font-size:12px;color:var(--muted);font-weight:700}
+.mchip .mn{font-size:13px;font-weight:600;margin-top:2px;line-height:1.3}
+.mchip .mo{font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;display:inline-block;margin-top:5px}
+.mchip .mo.u{color:#fff;background:var(--up)} .mchip .mo.r{color:#fff;background:var(--rev)}
+.mchip .evt{color:var(--gold);font-size:10px;font-weight:700;margin-top:4px;line-height:1.3}
+#monthDetail .dhead{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:4px}
+#monthDetail .dhead .dd{font-size:13px;color:var(--muted);font-weight:700}
+#monthDetail .dhead .big{font-size:20px;font-weight:700}
+#monthDetail .warn{color:var(--rev);font-size:12px;font-weight:700}
+#monthDetail .evt2{color:var(--gold);font-weight:700;margin:2px 0 8px}
+#monthDetail .worknote{background:var(--surface2);border-left:3px solid var(--plum);border-radius:8px;padding:9px 12px;margin-top:10px;font-size:14px}
+#monthDetail .worknote b{color:var(--plum)}
+</style>
+</head>
+<body>
+<button class="themebtn" id="themeBtn" title="切換主題">☾ 主題</button>
+<div class="wrap">
+  <div class="hero">
+    <div class="star">✦ ✦ ✦</div>
+    <h1>塔羅解牌台</h1>
+    <div class="sub latin">Tarot · Reading Desk</div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button data-tab="read" class="on">解牌</button>
+    <button data-tab="ref">牌義速查</button>
+    <button data-tab="spreads">牌陣</button>
+  </div>
+
+  <!-- ===== 解牌 ===== -->
+  <section data-panel="read">
+    <div class="card">
+      <label class="fld" for="q">你的問題</label>
+      <textarea id="q" placeholder="例：這份新工作的前兩週會怎麼發展？"></textarea>
+      <label class="fld" for="spreadSel" style="margin-top:12px">牌陣</label>
+      <select id="spreadSel"></select>
+      <div id="customWrap" hidden style="margin-top:8px">
+        <label class="fld" for="customN">自訂張數</label>
+        <input type="text" id="customN" inputmode="numeric" value="3" style="width:90px">
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="fld">你抽到的牌（自己抽，這裡登記）</label>
+      <div id="positions"></div>
+      <div class="addmore" id="addMoreWrap" hidden>
+        <button id="addPos">＋ 再加一張</button>
+        <span class="small">自由牌陣可自行增減</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="fld">整理好的牌面</label>
+      <div class="assembled" id="assembled">先選牌陣、登記牌面，這裡會自動整理。</div>
+      <div class="row-btns">
+        <button class="btn btn-go" id="goBtn">🔮 請 Claude 幫我解析</button>
+      </div>
+      <div class="row-btns">
+        <button class="btn btn-ghost" id="copyBtn">複製整份牌面</button>
+        <button class="btn btn-ghost" id="clearBtn">清空重來</button>
+      </div>
+      <p class="hint" id="goHint"></p>
+      <div class="reading" id="reading"></div>
+    </div>
+  </section>
+
+  <!-- ===== 牌義速查 ===== -->
+  <section data-panel="ref" hidden>
+    <div class="search">
+      <input type="text" id="refSearch" placeholder="搜尋牌名／關鍵字（例：權杖七、金幣、等待）">
+    </div>
+    <div id="refList"></div>
+  </section>
+
+  <!-- ===== 牌陣 ===== -->
+  <section data-panel="spreads" hidden>
+    <p class="hint" style="margin-bottom:12px">點牌陣可在「解牌」直接套用。各位置含義如下：</p>
+    <div id="spreadList"></div>
+  </section>
+</div>
+
+<script>
+/* ---------- 78 張牌資料：n 牌名, al 別名, uk/u 正位關鍵字/含義, rk/r 逆位 ---------- */
+var MAJOR=[
+ {id:'m0',n:'愚人',uk:'新開始・冒險・純真・自由',u:'帶著信任踏出第一步，未知中充滿可能。',rk:'魯莽・卻步・逃避・準備不足',r:'衝動或反而不敢動，行動前先想清楚風險。'},
+ {id:'m1',n:'魔術師',uk:'行動力・資源到位・顯化・主導',u:'你已具備所需的一切，是把想法化為行動的時候。',rk:'操弄・拖延・空想・自我懷疑',r:'潛力卡住或被誤用，小心話術與光說不練。'},
+ {id:'m2',n:'女祭司',al:'女教皇 女主教',uk:'直覺・內在智慧・靜待・祕密',u:'答案在內心，先傾聽直覺、別急著行動。',rk:'忽略直覺・表裡不一・壓抑・有隱情',r:'與內在失聯，或背後有未揭露的資訊。'},
+ {id:'m3',n:'皇后',uk:'豐饒・滋養・感性・創造',u:'愛與資源湧現，適合孕育、照顧與創作。',rk:'過度付出・依賴・創意阻塞・忽略自己',r:'失衡的照顧，記得先滋養自己。'},
+ {id:'m4',n:'皇帝',uk:'穩定・權威・結構・紀律',u:'建立秩序與規則，用理性掌控局面。',rk:'專制・僵化・失控・缺乏界線',r:'過度控制，或根基其實不穩。'},
+ {id:'m5',n:'教皇',al:'大祭司 祭司',uk:'傳統・體制・指導・信念',u:'依循既有制度，或尋求前輩與導師。',rk:'反傳統・質疑權威・自創規則',r:'想跳脫框架，但要注意分寸。'},
+ {id:'m6',n:'戀人',uk:'關係・結合・選擇・價值觀',u:'一段重要連結，或忠於內心的抉擇。',rk:'失衡・誘惑・價值衝突・猶疑',r:'關係或選擇出現裂痕，需對齊價值觀。'},
+ {id:'m7',n:'戰車',uk:'前進・意志・勝利・掌控',u:'聚焦目標，靠決心與行動突破。',rk:'失焦・內耗・方向不明・硬衝',r:'力量分散，或太過強行而受阻。'},
+ {id:'m8',n:'力量',uk:'內在力量・溫柔的堅定・勇氣・耐心',u:'以柔克剛，用內在穩定馴服衝動。',rk:'自我懷疑・失去耐性・壓抑・逞強',r:'力量用錯地方，或信心不足。'},
+ {id:'m9',n:'隱士',uk:'內省・獨處・尋找答案・沉澱',u:'退一步向內探求，給自己空間。',rk:'孤立・逃避・停滯・過度封閉',r:'等待變成消耗，該走出來了。'},
+ {id:'m10',n:'命運之輪',uk:'轉變・循環・機運・轉機',u:'局勢正在轉動，順勢而為。',rk:'卡住・壞運循環・抗拒改變',r:'轉變延遲，或重蹈覆轍。'},
+ {id:'m11',n:'正義',uk:'公正・因果・責任・決斷',u:'按事實與平衡做決定，為選擇負責。',rk:'不公・逃避責任・偏頗・失衡',r:'有失公允，或不願面對後果。'},
+ {id:'m12',n:'吊人',uk:'換角度・暫停・臣服・等待',u:'主動停下、轉念，換個視角看事情。',rk:'停滯太久・無謂犧牲・鑽牛角尖',r:'困在原地想太多，該有所行動。'},
+ {id:'m13',n:'死神',uk:'結束・轉化・放下・重生',u:'一段必須結束，才能迎來新的。',rk:'抗拒結束・拖延轉變・放不下',r:'該結束的沒結束，轉變卡住了。'},
+ {id:'m14',n:'節制',uk:'平衡・調和・耐心・中道',u:'把不同元素調和，循序漸進。',rk:'失衡・極端・操之過急・不協調',r:'節奏亂了，需要重新找回中道。'},
+ {id:'m15',n:'惡魔',uk:'束縛・慾望・執著・依賴',u:'被某種慾望或模式綁住，看清你的枷鎖。',rk:'鬆綁・覺醒・戒斷・重獲自由',r:'開始掙脫、擺脫依附。'},
+ {id:'m16',n:'塔',uk:'突變・崩解・真相揭露・震撼',u:'舊結構瓦解，雖震撼但清出了空間。',rk:'延遲的崩塌・恐懼改變・勉強維持',r:'危機醞釀中，或硬撐著不願它倒。'},
+ {id:'m17',n:'星星',uk:'希望・療癒・指引・信心',u:'風雨後的平靜，朝著願景前進。',rk:'失去信心・迷惘・自我懷疑',r:'暫時看不到光，但別否定方向。'},
+ {id:'m18',n:'月亮',uk:'不安・幻象・潛意識・曖昧不明',u:'情況朦朧，別被恐懼與錯覺帶著走。',rk:'迷霧漸散・釐清真相・面對恐懼',r:'真相開始浮現，混亂逐漸退去。'},
+ {id:'m19',n:'太陽',uk:'成功・喜悅・清晰・活力',u:'光明與肯定，事情順利開展。',rk:'延遲的好消息・樂觀受阻・暫時烏雲',r:'好結果會來，只是慢一點、低調些。'},
+ {id:'m20',n:'審判',uk:'覺醒・評估・召喚・重新出發',u:'回顧與清算後，迎來轉捩點。',rk:'自我批判・逃避檢視・猶豫重生',r:'遲遲不願面對，或放不下過去。'},
+ {id:'m21',n:'世界',uk:'圓滿・完成・整合・里程碑',u:'一個階段完整達成，收穫與整合。',rk:'差臨門一腳・未完成・拖尾',r:'接近完成，但還缺最後一步。'}
+];
+var WANDS=[
+ {id:'w1',n:'權杖一',uk:'靈感・衝勁・新機會・熱情點燃',u:'一股新能量或機會，放手去啟動。',rk:'動力不足・延遲・靈感卡住',r:'熱情尚未點燃，或時機未到。'},
+ {id:'w2',n:'權杖二',uk:'規劃・展望・抉擇・掌握全局',u:'站在起點做長遠規劃。',rk:'猶豫・害怕踏出・計畫落空',r:'遲遲不決，或視野受限。'},
+ {id:'w3',n:'權杖三',uk:'擴展・等待成果・遠見・進展',u:'布局已展開，等待回報到來。',rk:'延遲・受阻・計畫卡關',r:'進展不如預期，需要調整。'},
+ {id:'w4',n:'權杖四',uk:'慶祝・穩定・歸屬・里程碑',u:'一個安穩的成果，或團聚的時刻。',rk:'不穩・過渡期・團體摩擦',r:'根基未穩，或缺乏歸屬感。'},
+ {id:'w5',n:'權杖五',uk:'競爭・衝突・磨合・混亂',u:'多方較勁、意見分歧的拉扯。',rk:'避免衝突・內在矛盾・緊張緩解',r:'衝突平息，或壓抑著不發。'},
+ {id:'w6',n:'權杖六',uk:'勝利・肯定・好消息・領先',u:'努力被看見、獲得認可。',rk:'付出與回報不成比例・受挫・被忽視',r:'成果沒被肯定，或驕兵必敗。'},
+ {id:'w7',n:'權杖七',uk:'捍衛・堅守立場・挑戰・撐住',u:'面對壓力站穩、守住你的位置。',rk:'招架不住・人手不足・放棄・過度防備',r:'快撐不住了，別硬扛、該開口求援。'},
+ {id:'w8',n:'權杖八',uk:'快速進展・消息來臨・行動・加速',u:'事情迅速推進，或消息即將到來。',rk:'延遲・混亂・步調失序',r:'想法多但行動慢，卡在出口。'},
+ {id:'w9',n:'權杖九',uk:'韌性・警戒・撐到最後・防備',u:'傷還在但人沒倒，再堅持一下。',rk:'心力交瘁・固執防衛・偏執',r:'太過戒備，或已精疲力竭。'},
+ {id:'w10',n:'權杖十',uk:'重擔・責任・過勞・扛太多',u:'承擔過多，考慮放下或分擔。',rk:'卸下負擔・放手・釋放',r:'開始放下，或被迫丟掉包袱。'},
+ {id:'wp',n:'權杖侍者',uk:'熱情的開始・探索・好奇・躍躍欲試',u:'新興趣或機會的萌芽，勇於嘗試。',rk:'三分鐘熱度・方向未定・拖延',r:'熱情未落地，或猶豫不前。'},
+ {id:'wn',n:'權杖騎士',uk:'行動・冒險・衝勁・熱血',u:'帶著熱情勇往直前。',rk:'衝動・魯莽・虎頭蛇尾',r:'太衝，或難以持續到底。'},
+ {id:'wq',n:'權杖王后',uk:'自信・魅力・熱情・獨立',u:'散發熱力與領導魅力。',rk:'善妒・控制・耗竭・逞強',r:'自信失衡，或過度燃燒自己。'},
+ {id:'wk',n:'權杖國王',uk:'願景・領導・魄力・果斷',u:'以魄力帶領，把願景落實。',rk:'專斷・強勢・衝動・自大',r:'主管太強勢，或自己太衝，別硬碰硬。'}
+];
+var CUPS=[
+ {id:'c1',n:'聖杯一',uk:'新感情・情感湧現・愛・連結',u:'愛或靈感滿溢，敞開心去接受。',rk:'情感封閉・失落・壓抑・空虛',r:'心門關著，或情感受阻。'},
+ {id:'c2',n:'聖杯二',uk:'結合・互相・和諧・關係',u:'兩方的連結與相互吸引。',rk:'失和・誤會・關係緊張',r:'小誤會或失衡，多溝通確認。'},
+ {id:'c3',n:'聖杯三',uk:'慶祝・友誼・社群・共樂',u:'和人相聚、連結讓你活過來。',rk:'過度社交・小圈圈・關係變質',r:'社交耗能，或圈子出狀況。'},
+ {id:'c4',n:'聖杯四',uk:'倦怠・錯過・反思・提不起勁',u:'對眼前無感，可能錯過了機會。',rk:'重新振作・接受新機・走出低潮',r:'開始重拾興致、願意接受。'},
+ {id:'c5',n:'聖杯五',uk:'失落・遺憾・悲傷・專注於失去',u:'為失去難過，但別忽略還剩下的。',rk:'走出傷痛・接受・復原',r:'開始放下，看見留下來的。'},
+ {id:'c6',n:'聖杯六',uk:'懷舊・純真・善意・舊緣',u:'過往的溫暖，或舊人舊事重現。',rk:'困在過去・逃避現實・放不下',r:'太沉溺回憶，該往前走。'},
+ {id:'c7',n:'聖杯七',uk:'選擇眾多・幻想・誘惑・看不清',u:'選項多但虛實混雜，需要釐清。',rk:'看清現實・聚焦・做出選擇',r:'迷霧散去、下定決心。'},
+ {id:'c8',n:'聖杯八',uk:'離開・追尋更深・放下・轉身',u:'放下目前的，去尋找更有意義的。',rk:'留戀・猶豫走留・害怕改變',r:'想走又放不下，卡在中間。'},
+ {id:'c9',n:'聖杯九',uk:'滿足・心願達成・幸福・被肯定',u:'願望成真，享受你的成果。',rk:'表面滿足・貪求・空虛',r:'得到了卻不滿足，或願望延後。'},
+ {id:'c10',n:'聖杯十',uk:'圓滿・家庭・情感富足・和樂',u:'情感與關係的完整與幸福。',rk:'失和・理想落差・表裡不一',r:'幸福的表象下有裂痕。'},
+ {id:'cp',n:'聖杯侍者',uk:'情感的開始・靈感・浪漫・訊息',u:'一份溫柔的開始，或好消息。',rk:'情緒化・幼稚・逃避感受',r:'情感不成熟，或收到壞消息。'},
+ {id:'cn',n:'聖杯騎士',uk:'浪漫・追求・理想・邀約',u:'帶著情感與理想前來。',rk:'不切實際・情緒化・失信',r:'承諾空泛，或情感飄忽。'},
+ {id:'cq',n:'聖杯王后',uk:'同理・溫柔・直覺・包容',u:'以情感與直覺照顧他人。',rk:'情緒依賴・過度敏感・內耗',r:'被情緒淹沒，或界線不清。'},
+ {id:'ck',n:'聖杯國王',uk:'情感成熟・包容・穩定・外柔內穩',u:'掌控情緒，以成熟態度待人。',rk:'壓抑・情緒操控・陰晴不定',r:'表面平靜，但內在波動。'}
+];
+var SWORDS=[
+ {id:'s1',n:'寶劍一',uk:'突破・清晰・真相・新想法',u:'思路豁然開朗，一刀切中核心。',rk:'混亂・誤判・資訊不清',r:'思緒打結，或判斷失準。'},
+ {id:'s2',n:'寶劍二',uk:'僵局・逃避抉擇・權衡・蒙蔽',u:'不願面對的兩難，先看清再決定。',rk:'猶豫鬆動・做出選擇・看清',r:'僵局打破，但可能倉促。'},
+ {id:'s3',n:'寶劍三',uk:'心痛・傷害・背叛・悲傷',u:'一段讓人痛的真相或分離。',rk:'復原・釋放傷痛・原諒',r:'傷口開始癒合。'},
+ {id:'s4',n:'寶劍四',uk:'休息・沉澱・療養・暫停',u:'讓身心喘口氣、好好恢復。',rk:'倦怠累積・該休息・重新出發',r:'過勞，或休息後準備重啟。'},
+ {id:'s5',n:'寶劍五',uk:'衝突・爭輸贏・代價・好勝',u:'爭贏了，卻可能失去更多。',rk:'和解・放下輸贏・收手',r:'願意退一步，或仍有餘怨。'},
+ {id:'s6',n:'寶劍六',uk:'過渡・離開困境・前行・療傷中',u:'離開風浪，往平靜移動。',rk:'卡在原地・放不下・舊傷重臨',r:'想走卻走不了。'},
+ {id:'s7',n:'寶劍七',uk:'策略・取巧・保留・獨自行動',u:'用計謀或單獨行動，注意誠信。',rk:'被揭穿・良心不安・坦白',r:'謊言現形，或選擇說實話。'},
+ {id:'s8',n:'寶劍八',uk:'受限・自我設限・無助・綁手綁腳',u:'困境多半來自自己的恐懼。',rk:'鬆綁・看見出路・突破限制',r:'開始掙脫框架。'},
+ {id:'s9',n:'寶劍九',uk:'焦慮・失眠・擔憂・鑽牛角尖',u:'多半是腦中被放大的恐懼。',rk:'焦慮緩解・面對・走出夢魘',r:'擔憂開始消退。'},
+ {id:'s10',n:'寶劍十',uk:'谷底・結束・背刺・觸底',u:'最壞的已過，接下來只會好轉。',rk:'緩慢復原・殘留・重新站起',r:'走出低谷，但仍有餘痛。'},
+ {id:'sp',n:'寶劍侍者',uk:'好奇・觀察・求知・留心消息',u:'敏銳求真，蒐集資訊。',rk:'多疑・口舌・魯莽發言',r:'愛打聽，或言語傷人。'},
+ {id:'sn',n:'寶劍騎士',uk:'果決・直接・行動・雄辯',u:'帶著想法快速衝刺（適合教學、表達）。',rk:'衝動・魯莽・言語過激',r:'操之過急，或咄咄逼人。'},
+ {id:'sq',n:'寶劍王后',uk:'理智・獨立・洞察・公正',u:'以清明的理性看清事實。',rk:'冷漠・尖銳・偏見・苛刻',r:'太過防備，或言語刻薄。'},
+ {id:'sk',n:'寶劍國王',uk:'理性・權威・判斷・原則',u:'以邏輯與原則做決斷。',rk:'專斷・冷酷・濫用理性',r:'理性變成壓迫，或固執己見。'}
+];
+var PENTS=[
+ {id:'p1',n:'錢幣一',al:'星幣 金幣',uk:'新機會・務實起點・財務契機・種子',u:'一個踏實的新開始或資源。',rk:'機會延遲・計畫落空・財務不穩',r:'時機未到，或根基不穩。'},
+ {id:'p2',n:'錢幣二',al:'星幣 金幣',uk:'平衡・彈性・多工・調度',u:'在多件事之間靈活調配。',rk:'失衡・分身乏術・財務吃緊',r:'顧此失彼，週轉困難。'},
+ {id:'p3',n:'錢幣三',al:'星幣 金幣',uk:'合作・技術被看見・團隊・學習',u:'能力獲得肯定，與人協作成事。',rk:'各做各的・品質落差・不被重視',r:'配合不良，或技術未被看見。'},
+ {id:'p4',n:'錢幣四',al:'星幣 金幣',uk:'穩守・節制・安全感・囤積',u:'守住資源，但小心抓得太緊。',rk:'鬆手・放下控制・匱乏感',r:'該放鬆對金錢或安全感的執著。'},
+ {id:'p5',n:'錢幣五',al:'星幣 金幣',uk:'匱乏・困頓・被排除・擔憂',u:'經濟或情感上的辛苦，別硬撐著不求助。',rk:'走出困境・重獲支持・復原',r:'情況開始好轉。'},
+ {id:'p6',n:'錢幣六',al:'星幣 金幣',uk:'給予與接受・慷慨・平衡・互助',u:'資源流動，得到或給出援助。',rk:'條件不清・不對等・施捨・債務',r:'給予失衡或附帶條件，先保住自己的權益。'},
+ {id:'p7',n:'錢幣七',al:'星幣 金幣',uk:'耐心・評估・等待收成・投資中',u:'付出後的觀望期，成果需要時間。',rk:'沒成果別否定・焦躁・投資失利',r:'初期沒回報，別急著否定自己。'},
+ {id:'p8',n:'錢幣八',al:'星幣 金幣',uk:'精進・專注・累積・工匠精神',u:'專注打磨技能，穩定積累。',rk:'敷衍・停滯・方向偏差',r:'失去專注，或做了白工。'},
+ {id:'p9',n:'錢幣九',al:'星幣 金幣',uk:'獨立・自給・成果・優雅',u:'靠自己達到的豐足與自在。',rk:'過度依賴・入不敷出・犧牲獨立',r:'財務或獨立性出了狀況。'},
+ {id:'p10',n:'錢幣十',al:'星幣 金幣',uk:'富足・穩固・家業・長遠',u:'穩定的根基與長期的豐盛。',rk:'財務風險・家庭財務糾紛・短視',r:'根基出現裂縫，或金錢紛爭。'},
+ {id:'pp',n:'錢幣侍者',al:'星幣 金幣',uk:'學習・新機會・務實起步・第一桶金',u:'學習新技能，或收入的起步。',rk:'不切實際・分心・起步拖延',r:'眼高手低，或遲遲不動。'},
+ {id:'pn',n:'錢幣騎士',al:'星幣 金幣',uk:'勤奮・穩定・可靠・按部就班',u:'踏實可靠、穩穩前進（就是略慢）。',rk:'停滯・保守・無趣・拖延',r:'太過保守，或原地踏步。'},
+ {id:'pq',n:'錢幣王后',al:'星幣 金幣',uk:'務實・照顧・穩健・資源管理',u:'兼顧現實與溫暖的照顧者。',rk:'失衡・過勞・金錢焦慮・忽略自己',r:'蠟燭兩頭燒。'},
+ {id:'pk',n:'錢幣國王',al:'星幣 金幣',uk:'富足・穩定・務實領導・成就',u:'以務實與穩健累積成就。',rk:'固執・物質至上・控制・風險',r:'太看重錢，或投資失當。'}
+];
+var GROUPS=[
+ {key:'major',zh:'大阿爾克那',en:'Major Arcana',cards:MAJOR},
+ {key:'wands',zh:'權杖',en:'Wands · 火',cards:WANDS},
+ {key:'cups',zh:'聖杯',en:'Cups · 水',cards:CUPS},
+ {key:'swords',zh:'寶劍',en:'Swords · 風',cards:SWORDS},
+ {key:'pents',zh:'錢幣',en:'Pentacles · 土',cards:PENTS}
+];
+var BYID={};GROUPS.forEach(function(g){g.cards.forEach(function(c){c._g=g.zh;BYID[c.id]=c;});});
+
+var SPREADS=[
+ {id:'one',name:'單張指引',pos:['當下指引']},
+ {id:'time3',name:'時間軸（過去・現在・未來）',pos:['過去','現在','未來']},
+ {id:'sar',name:'情況・行動・結果',pos:['現況','該採取的行動','可能的結果']},
+ {id:'yesno',name:'是非＋建議',pos:['核心（是非傾向）','給你的建議']},
+ {id:'mbs',name:'身・心・靈',pos:['身體／現實','情緒／內心','靈性／潛意識']},
+ {id:'choice',name:'二選一',pos:['選項A・現況','選項A・發展','選項B・現況','選項B・發展']},
+ {id:'rel',name:'關係牌陣',pos:['你','對方','你們之間','發展方向']},
+ {id:'celtic',name:'凱爾特十字',pos:['現況','阻礙或助力','內在根基','過去','可能的未來','近期發展','你的態度','環境與他人','希望或恐懼','最終結果']},
+ {id:'custom',name:'自由牌陣（自訂張數）',pos:null}
+];
+
+var $=function(s){return document.querySelector(s);};
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+/* ---------- tabs ---------- */
+document.querySelector('.tabs').addEventListener('click',function(e){
+  var b=e.target.closest('[data-tab]');if(!b)return;
+  document.querySelectorAll('.tabs button').forEach(function(x){x.classList.toggle('on',x===b);});
+  var t=b.getAttribute('data-tab');
+  document.querySelectorAll('[data-panel]').forEach(function(p){p.hidden=p.getAttribute('data-panel')!==t;});
+  window.scrollTo(0,0);
+});
+
+/* ---------- theme ---------- */
+(function(){var saved;try{saved=localStorage.getItem('tarotTheme');}catch(e){}
+ if(saved)document.documentElement.setAttribute('data-theme',saved);
+ $('#themeBtn').onclick=function(){
+   var cur=document.documentElement.getAttribute('data-theme');
+   var isDark = cur==='dark' || (!cur && matchMedia('(prefers-color-scheme: dark)').matches);
+   var next=isDark?'light':'dark';
+   document.documentElement.setAttribute('data-theme',next);
+   try{localStorage.setItem('tarotTheme',next);}catch(e){}
+ };
+})();
+
+/* ---------- 牌義速查 ---------- */
+function cardMeaningHtml(c){
+  return '<div class="meaning">'+
+    '<div class="mline"><span class="ori u">正位</span><div><div class="kw">'+esc(c.uk)+'</div>'+esc(c.u)+'</div></div>'+
+    '<div class="mline"><span class="ori r">逆位</span><div><div class="kw">'+esc(c.rk)+'</div>'+esc(c.r)+'</div></div>'+
+    '</div>';
+}
+function renderRef(filter){
+  filter=(filter||'').trim();
+  var html='';
+  GROUPS.forEach(function(g){
+    var rows=g.cards.filter(function(c){
+      if(!filter)return true;
+      var hay=c.n+' '+(c.al||'')+' '+c.uk+' '+c.rk+' '+c.u+' '+c.r+' '+g.zh;
+      return hay.indexOf(filter)>=0;
+    });
+    if(!rows.length)return;
+    html+='<div class="ref-group">'+esc(g.zh)+'<span class="latin">'+esc(g.en)+'</span></div>';
+    rows.forEach(function(c){
+      html+='<details class="crow"><summary><span>'+esc(c.n)+'</span>'+(c.al?'<span class="kw">'+esc(c.al.split(' ')[0])+'…</span>':'')+'<span class="chev">›</span></summary>'+cardMeaningHtml(c)+'</details>';
+    });
+  });
+  $('#refList').innerHTML=html||'<p class="hint">找不到符合的牌，換個關鍵字試試。</p>';
+}
+$('#refSearch').addEventListener('input',function(){renderRef(this.value);});
+renderRef('');
+
+/* ---------- 牌陣清單 ---------- */
+(function(){
+  var html='';
+  SPREADS.filter(function(s){return s.pos;}).forEach(function(s){
+    html+='<div class="spread"><div class="cnt latin">'+s.pos.length+' CARDS</div><h3>'+esc(s.name)+'</h3><ol>'+
+      s.pos.map(function(p){return '<li><b>'+esc(p)+'</b></li>';}).join('')+
+      '</ol><div class="row-btns"><button class="btn btn-ghost" style="font-size:13px;padding:8px 14px" data-use="'+s.id+'">用這個牌陣解牌</button></div></div>';
+  });
+  $('#spreadList').innerHTML=html;
+  $('#spreadList').addEventListener('click',function(e){
+    var b=e.target.closest('[data-use]');if(!b)return;
+    $('#spreadSel').value=b.getAttribute('data-use');
+    onSpreadChange();
+    document.querySelector('.tabs [data-tab="read"]').click();
+  });
+})();
+
+/* ---------- 解牌工作台 ---------- */
+function optionsHtml(selId){
+  var h='<option value="">— 選牌 —</option>';
+  GROUPS.forEach(function(g){
+    h+='<optgroup label="'+esc(g.zh)+'">';
+    g.cards.forEach(function(c){h+='<option value="'+c.id+'"'+(c.id===selId?' selected':'')+'>'+esc(c.n)+'</option>';});
+    h+='</optgroup>';
+  });
+  return h;
+}
+(function(){
+  $('#spreadSel').innerHTML=SPREADS.map(function(s){return '<option value="'+s.id+'">'+esc(s.name)+(s.pos?'（'+s.pos.length+'）':'')+'</option>';}).join('');
+})();
+var state={spread:'time3',rows:[]};   // rows: [{card:'', ori:'up', label:''}]
+function currentSpread(){return SPREADS.filter(function(s){return s.id===state.spread;})[0];}
+function buildRows(){
+  var sp=currentSpread();var labels;
+  if(sp.pos){labels=sp.pos.slice();}
+  else{var n=Math.max(1,Math.min(15,parseInt($('#customN').value||'3',10)||3));labels=[];for(var i=0;i<n;i++)labels.push('第 '+(i+1)+' 張');}
+  // 盡量保留已選
+  var old=state.rows;state.rows=labels.map(function(l,i){return {label:l,card:old[i]?old[i].card:'',ori:old[i]?old[i].ori:'up'};});
+  renderRows();
+}
+function renderRows(){
+  var sp=currentSpread();
+  $('#positions').innerHTML=state.rows.map(function(r,i){
+    return '<div class="posrow"><div class="plabel">'+(i+1)+'. '+esc(r.label)+'</div>'+
+      '<select data-ci="'+i+'">'+optionsHtml(r.card)+'</select>'+
+      '<button class="oribtn" data-oi="'+i+'" data-o="'+r.ori+'">'+(r.ori==='rev'?'逆位':'正位')+'</button>'+
+      '</div>';
+  }).join('');
+  $('#addMoreWrap').hidden = !!sp.pos;
+  $('#customWrap').hidden = !!sp.pos;
+  updateAssembled();
+}
+function onSpreadChange(){state.spread=$('#spreadSel').value;state.rows=[];buildRows();}
+$('#spreadSel').addEventListener('change',onSpreadChange);
+$('#customN').addEventListener('input',function(){if(!currentSpread().pos)buildRows();});
+$('#positions').addEventListener('change',function(e){var s=e.target.closest('[data-ci]');if(!s)return;state.rows[+s.getAttribute('data-ci')].card=s.value;updateAssembled();saveDraft();});
+$('#positions').addEventListener('click',function(e){var b=e.target.closest('[data-oi]');if(!b)return;var i=+b.getAttribute('data-oi');var r=state.rows[i];r.ori=r.ori==='up'?'rev':'up';b.setAttribute('data-o',r.ori);b.textContent=r.ori==='rev'?'逆位':'正位';updateAssembled();saveDraft();});
+$('#addPos').onclick=function(){if(currentSpread().pos)return;state.rows.push({label:'第 '+(state.rows.length+1)+' 張',card:'',ori:'up'});renderRows();};
+
+function lineFor(r){
+  var c=BYID[r.card];if(!c)return null;
+  var up=r.ori!=='rev';
+  return {name:c.n,ori:up?'正位':'逆位',kw:up?c.uk:c.rk,mean:up?c.u:c.r};
+}
+function updateAssembled(){
+  var q=$('#q').value.trim();
+  var any=state.rows.some(function(r){return r.card;});
+  if(!any){$('#assembled').textContent='先選牌陣、登記牌面，這裡會自動整理。';$('#goBtn').disabled=true;return;}
+  var txt='';
+  if(q)txt+='問題：'+q+'\n牌陣：'+currentSpread().name+'\n\n';
+  state.rows.forEach(function(r,i){
+    var L=lineFor(r);
+    txt+=(i+1)+'. '+r.label+'｜'+(L?L.name+'（'+L.ori+'）':'（未選）')+'\n';
+    if(L)txt+='   關鍵字：'+L.kw+'\n   '+L.mean+'\n';
+  });
+  $('#assembled').textContent=txt.trim();
+  $('#goBtn').disabled=false;
+}
+$('#q').addEventListener('input',function(){updateAssembled();saveDraft();});
+
+function buildPrompt(){
+  var q=$('#q').value.trim();
+  var sp=currentSpread();
+  var lines=state.rows.map(function(r,i){var L=lineFor(r);return (i+1)+'. 位置「'+r.label+'」：'+(L?L.name+'（'+L.ori+'）':'未選牌');}).filter(function(x,i){return state.rows[i].card;});
+  var instr='你是一位溫暖、直接、誠實的塔羅占卜師，說繁體中文。請用「組合式」解讀，不要逐張單獨給牌義——把相鄰或同組的牌串成連貫的訊息。依牌陣位置的意義來解，點出最值得注意的牌組，最後給一段整體訊息和一個具體提醒。語氣像真人說話，不要空泛的安慰，也尊重最終決定權在問卜者手上。';
+  var body='【問題】'+(q||'（未填，請就牌面本身與位置給出通則解讀）')+'\n【牌陣】'+sp.name+'\n【抽到的牌】\n'+lines.join('\n');
+  return instr+'\n\n'+body;
+}
+
+$('#goBtn').addEventListener('click',async function(){
+  var reading=$('#reading'),hint=$('#goHint');
+  $('#goBtn').disabled=true;hint.textContent='';reading.textContent='正在為你串牌面…';
+  var sample=null;
+  try{sample=await claude.use('sample');}catch(e){}
+  if(!sample){
+    reading.textContent='';
+    hint.innerHTML='這個環境暫時無法連線 Claude 解牌。你可以按「複製整份牌面」，貼到聊天室請我幫你解；上方的牌義速查也能自己對照。';
+    $('#goBtn').disabled=false;return;
+  }
+  try{
+    var res=await sample(buildPrompt(),{modelTier:'default',onText:function(o){reading.textContent=o.text;}});
+    if(res&&res.text)reading.textContent=res.text;
+    hint.textContent='※ 牌面僅供參考，決定權在你手上。';
+  }catch(err){
+    reading.textContent='';
+    if(err&&err.code==='rate_limited')hint.textContent='太頻繁了，稍等一下再試。';
+    else if(err&&err.code==='not_granted')hint.textContent='需要你允許這個頁面向 Claude 提問才能解牌。';
+    else hint.textContent='解牌時出了點狀況，可改用「複製整份牌面」貼到聊天室請我解。';
+  }
+  $('#goBtn').disabled=false;
+});
+
+$('#copyBtn').addEventListener('click',function(){
+  var t=$('#assembled').textContent;var r=$('#reading').textContent;
+  var out=t+(r?'\n\n—— 解讀 ——\n'+r:'');
+  var btn=this;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(out).then(function(){btn.textContent='已複製 ✓';setTimeout(function(){btn.textContent='複製整份牌面';},1500);}).catch(select);
+  }else select();
+  function select(){var ta=document.createElement('textarea');ta.value=out;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');btn.textContent='已複製 ✓';setTimeout(function(){btn.textContent='複製整份牌面';},1500);}catch(e){}document.body.removeChild(ta);}
+});
+$('#clearBtn').addEventListener('click',function(){$('#q').value='';state.rows.forEach(function(r){r.card='';r.ori='up';});renderRows();$('#reading').textContent='';$('#goHint').textContent='';saveDraft();});
+
+/* ---------- 草稿（本機暫存，方便重開繼續） ---------- */
+function saveDraft(){try{localStorage.setItem('tarotDraft',JSON.stringify({q:$('#q').value,spread:state.spread,rows:state.rows,customN:$('#customN').value}));}catch(e){}}
+function loadDraft(){
+  var d;try{d=JSON.parse(localStorage.getItem('tarotDraft')||'null');}catch(e){}
+  if(d&&d.spread){state.spread=d.spread;$('#spreadSel').value=d.spread;if(d.customN)$('#customN').value=d.customN;
+    buildRows();
+    if(d.rows&&d.rows.length){state.rows=d.rows.map(function(r,i){return {label:(currentSpread().pos?currentSpread().pos[i]:r.label)||r.label,card:r.card||'',ori:r.ori||'up'};});renderRows();}
+    if(d.q)$('#q').value=d.q;
+    updateAssembled();
+  }else{buildRows();}
+}
+loadDraft();
+</script>
+</body>
+</html>
