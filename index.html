@@ -421,8 +421,34 @@ function buildPrompt(){
   return instr+'\n\n'+body;
 }
 
+/* 一般網站（GitHub Pages）沒辦法直接呼叫 Claude：
+   按鈕會把整份解牌指令複製起來，並打開 Claude 新對話（輸入框帶入內容），送出就能解牌。 */
+function copyText(text){
+  var ok=false;
+  try{
+    var ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');
+    ta.style.position='fixed';ta.style.top='0';ta.style.opacity='0';document.body.appendChild(ta);
+    ta.focus();ta.select();ta.setSelectionRange(0,text.length);
+    ok=document.execCommand('copy');document.body.removeChild(ta);
+  }catch(e){}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).catch(function(){});ok=true;}
+  return ok;
+}
+function openInClaude(){
+  var p=buildPrompt();
+  var copied=copyText(p);
+  var url='https://claude.ai/new?q='+encodeURIComponent(p);
+  var w=window.open(url,'_blank');
+  if(!w)location.href=url;
+  $('#reading').textContent='';
+  $('#goHint').innerHTML=(copied?'✓ 已複製整份牌面，並打開 Claude。':'已打開 Claude。')+
+    '<br>如果 Claude 的輸入框是空的，長按輸入框選「貼上」再送出就可以了。';
+}
+
 $('#goBtn').addEventListener('click',async function(){
   var reading=$('#reading'),hint=$('#goHint');
+  // 不在 Claude 裡面（例如 GitHub 網站、加到主畫面）→ 直接帶到 Claude
+  if(!(window.claude&&typeof window.claude.use==='function')){openInClaude();return;}
   $('#goBtn').disabled=true;hint.textContent='';reading.textContent='正在為你串牌面…';
   var sample=null;
   try{sample=await claude.use('sample');}catch(e){}
